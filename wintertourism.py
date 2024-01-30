@@ -57,12 +57,22 @@ df_inn.plot.bar(title='Touristen in Innsbruck')
 
 # import bev_meldedaten
 df_bev = pd.read_excel('data/bev_meld.xlsx', header=0)
-base = ['Bezirk','Gemnr','Gemeinde']
+
+# Umbenennen der Spalten
+base = ['Bezirk', 'Gemnr', 'Gemeinde']
 years = df_bev.columns[3:].astype(str)
 base.extend('j' + years)
-df_bev = df_bev[1:]
 df_bev.columns = base
-both = pd.merge(df_bev, df, how='inner', on = 'Gemnr')
+
+# Join der DataFrames
+both = pd.merge(df_bev, df, how='inner', on='Gemnr')
+
+# Doppelte Spalten löschen
+both = both.drop(columns='Gemnr')
 # touristen(x) pro einwohner(j)
 both['ratio18'] = both['x2018'] / both['j2018']
-print(both.describe())
+print(both['ratio18'])
+plt.figure(figsize=(10, 6))
+both.boxplot(column='ratio18', vert=False)
+plt.title('Verhältnis Touristen pro Einwohner (2018) nach Bezirk')
+plt.show()
